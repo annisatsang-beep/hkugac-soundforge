@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Sonic Forge - HKUGA 20th Anniversary</title>
+    <style>
+        /* Orange & Black Theme based on Poster */
+        body {
+            background-color: #F48A3D; color: #111;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center;
+        }
+        .container {
+            background-color: #fff; max-width: 900px; width: 100%;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden; border: 4px solid #111;
+        }
+        .header { background-color: #111; color: #F48A3D; text-align: center; padding: 30px 20px; }
+        .header h1 { margin: 0; font-size: 2.5em; letter-spacing: 2px; }
+        .section { padding: 25px; border-bottom: 2px dashed #ccc; }
+        .section:last-child { border-bottom: none; }
+        h2 { color: #111; margin-top: 0; display: flex; align-items: center; }
+        .badge { background: #111; color: #fff; padding: 5px 15px; border-radius: 20px; font-size: 0.8em; margin-right: 15px; }
+        
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        button {
+            padding: 10px 15px; font-size: 1em; font-weight: bold; border: 2px solid #111; 
+            border-radius: 8px; cursor: pointer; transition: transform 0.1s, opacity 0.2s;
+        }
+        button:hover { opacity: 0.8; transform: scale(1.02); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-green { background-color: #4CAF50; color: white; }
+        .btn-yellow { background-color: #FFC107; color: black; }
+        .btn-red { background-color: #F44336; color: white; }
+        .btn-black { background-color: #111; color: #F48A3D; width: 100%; margin-top: 15px; padding: 15px; font-size: 1.1em;}
+        .btn-blue { background-color: #2196F3; color: white; width: 100%; margin-top: 20px; padding: 15px; font-size: 1.2em; display: none;}
+        
+        .data-box { background: #eee; padding: 15px; border-radius: 8px; font-size: 1.1em; margin-bottom: 15px; text-align: center; }
+        .data-box h3 { margin-top: 0; color: #D35400; }
+        
+        input[type="number"], input[type="text"], select {
+            padding: 10px; font-size: 1em; border: 2px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box; margin-bottom: 10px;
+        }
+        .input-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .input-row label { font-weight: bold; min-width: 150px; }
+        .hidden { display: none; }
+
+        /* CSS Piano */
+        .piano-container { display: flex; justify-content: center; margin: 20px 0; position: relative; height: 160px; }
+        .key {
+            border: 2px solid #111; border-radius: 0 0 5px 5px; position: relative; display: flex; 
+            align-items: flex-end; justify-content: center; padding-bottom: 10px; font-weight: bold; 
+            font-size: 0.8em; user-select: none; cursor: pointer; transition: background-color 0.1s;
+        }
+        .white-key { background: white; width: 45px; height: 150px; z-index: 1; color: #111; }
+        .white-key:active { background: #e0e0e0; }
+        .black-key {
+            background: #111; width: 30px; height: 90px; z-index: 2; color: white;
+            margin-left: -15px; margin-right: -15px; padding-bottom: 5px; font-size: 0.7em;
+        }
+        .black-key:active { background: #333; }
+        
+        .highlight { background-color: #F48A3D !important; color: white !important; }
+        .highlight-start { background-color: #2196F3 !important; color: white !important; box-shadow: 0 0 10px #2196F3; z-index: 3;}
+        .key-playing { background-color: #4CAF50 !important; color: white !important; }
+        
+        /* Multiplier Inventory */
+        .inventory { background: #111; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .inventory span { background: #F48A3D; color: #111; padding: 3px 10px; border-radius: 15px; font-weight: bold; margin-right: 10px; display: inline-block; margin-top: 5px;}
+        
+        #prompt-output { background: #222; color: #F48A3D; padding: 15px; border-radius: 8px; font-family: monospace; white-space: pre-wrap; margin-top: 15px; font-size: 1.1em; }
+        .filename-box { background: #D35400; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.2em; margin-top: 10px; }
+        
+        .divider { border-top: 2px solid #111; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>THE SONIC FORGE</h1>
+        <p>HKUGA College 20th Anniversary • Math x Music x AI</p>
+    </div>
+
+    <div class="section" id="stage1">
+        <h2><span class="badge">Stage 1</span> Decode the Multipliers</h2>
+        <p>Click a level to begin. <strong>(Turn your volume up!)</strong> Observe the frequencies and press the piano keys to hear the math.</p>
+        
+        <div class="btn-group">
+            <button class="btn-green" id="btn-l1" onclick="loadLevel(1)">Level 1 (Octave & Fifth)</button>
+            <button class="btn-yellow" id="btn-l2" onclick="loadLevel(2)">Level 2 (Major Third)</button>
+            <button class="btn-red" id="btn-l3" onclick="loadLevel(3)">Level 3 (Semitone)</button>
+        </div>
+
+        <div class="piano-container" id="piano-stage1"></div>
+
+        <div id="level-content" class="data-box hidden"></div>
+        <p id="level-feedback" style="font-weight: bold; text-align: center;"></p>
+        
+        <button id="btn-proceed" class="btn-blue" onclick="startStage2()">Proceed to Stage 2: Forge Your Notes ➔</button>
+    </div>
+
+    <div class="section hidden" id="stage2">
+        <h2><span class="badge">Stage 2</span> Compose Your Melody</h2>
+        
+        <div class="inventory" id="inventory-box">
+            <strong>Unlocked Multipliers:</strong> <div id="unlocked-list"></div>
+        </div>
+
+        <p>Your random starting note is <strong id="random-note-name" style="font-size:1.2em; color:#D35400;"></strong> (<strong id="random-note-freq" style="color:#D35400;"></strong> Hz). It is highlighted in <span style="color:#2196F3; font-weight:bold;">BLUE</span> below.</p>
+        <p><strong>Instructions:</strong> Use the piano below to listen and find a melody you like. Then, use your unlocked multipliers to <strong>calculate</strong> the exact frequencies of your chosen notes and type them in.</p>
+        
+        <div class="piano-container" id="piano-stage2"></div>
+
+        <div class="input-row"><label>Note 1 (Base):</label><span id="n1-display" style="font-weight:bold; width:100%; font-size:1.2em;"></span></div>
+        <div class="input-row"><label>Note 2 Calculated:</label><input type="number" id="input-n2" placeholder="e.g. 392.45" step="0.01"></div>
+        <div class="input-row"><label>Note 3 Calculated:</label><input type="number" id="input-n3" placeholder="e.g. 588.67" step="0.01"></div>
+        <div class="input-row"><label>Note 4 Calculated:</label><input type="number" id="input-n4" placeholder="e.g. 294.33" step="0.01"></div>
+        
+        <button class="btn-black" onclick="verifyBassline()">Check My Calculations</button>
+        <p id="bassline-feedback" style="font-weight: bold; text-align: center; margin-top: 15px;"></p>
+    </div>
+
+    <div class="section hidden" id="stage3">
+        <h2><span class="badge">Stage 3</span> The Producer's Chair</h2>
+        <p>Math verified! Fill in your details and design the style of your 20th Anniversary track.</p>
+        
+        <h3 style="color: #D35400;">Student Details</h3>
+        <div class="input-row"><label>Class:</label><input type="text" id="student-class" placeholder="e.g. S1H"></div>
+        <div class="input-row"><label>Class Number:</label><input type="number" id="student-num" placeholder="e.g. 5"></div>
+        <div class="input-row"><label>Name:</label><input type="text" id="student-name" placeholder="e.g. Chris Wong"></div>
+
+        <div class="divider"></div>
+
+        <h3 style="color: #D35400;">Song Blueprint (Optional)</h3>
+        <div class="input-row"><label>Genre / Style:</label><input type="text" id="prompt-genre" placeholder="e.g., 90s shoegaze, energetic K-Pop"></div>
+        <div class="input-row"><label>Mood / Emotion:</label><input type="text" id="prompt-mood" placeholder="e.g., melancholic, triumphant, eerie"></div>
+        <div class="input-row"><label>Instrumentation:</label><input type="text" id="prompt-inst" placeholder="e.g., jangly guitars, reverb-heavy piano"></div>
+        <div class="input-row"><label>Tempo / Rhythm:</label><input type="text" id="prompt-tempo" placeholder="e.g., 120 BPM, slow ballad"></div>
+        <div class="input-row"><label>Vocal Style:</label><input type="text" id="prompt-vocal" placeholder="e.g., breathy female vocals, gravelly male voice"></div>
+        
+        <button class="btn-black" onclick="generatePrompt()">GENERATE LYRIA 3 BLUEPRINT</button>
+        
+        <div id="final-prompt-container" class="hidden">
+            <h3 style="margin-top:20px;">1. Copy this exact prompt into Lyria 3:</h3>
+            <div id="prompt-output"></div>
+            
+            <h3 style="margin-top:20px;">2. Save your downloaded song exactly as:</h3>
+            <div class="filename-box" id="filename-output"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- AUDIO ENGINE ---
+    let audioCtx;
+    function initAudio() {
+        if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+    }
+
+    function playTone(freq, elementId) {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1.5);
+
+        const el = document.getElementById(elementId);
+        if(el) {
+            const originalClass = el.className;
+            el.classList.add('key-playing');
+            setTimeout(() => { el.className = originalClass; }, 200);
+        }
+    }
+
+    // --- PIANO SETUP ---
+    const keysData = [
+        { name: 'C4', type: 'white', freq: 261.63 }, { name: 'C#4', type: 'black', freq: 277.18 }, 
+        { name: 'D4', type: 'white', freq: 293.66 }, { name: 'D#4', type: 'black', freq: 311.13 }, 
+        { name: 'E4', type: 'white', freq: 329.63 }, { name: 'F4', type: 'white', freq: 349.23 },
+        { name: 'F#4', type: 'black', freq: 369.99 }, { name: 'G4', type: 'white', freq: 392.00 }, 
+        { name: 'G#4', type: 'black', freq: 415.30 }, { name: 'A4', type: 'white', freq: 440.00 }, 
+        { name: 'A#4', type: 'black', freq: 466.16 }, { name: 'B4', type: 'white', freq: 493.88 },
+        { name: 'C5', type: 'white', freq: 523.25 }, { name: 'C#5', type: 'black', freq: 550.00 }, 
+        { name: 'D5', type: 'white', freq: 587.33 }, { name: 'D#5', type: 'black', freq: 622.25 }, 
+        { name: 'E5', type: 'white', freq: 660.00 }, { name: 'F5', type: 'white', freq: 698.46 }, 
+        { name: 'F#5', type: 'black', freq: 740.00 }, { name: 'G5', type: 'white', freq: 783.99 }, 
+        { name: 'G#5', type: 'black', freq: 830.61 }, { name: 'A5', type: 'white', freq: 880.00 }
+    ];
+
+    function buildPiano(containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        keysData.forEach(note => {
+            const key = document.createElement('div');
+            key.className = `key ${note.type}-key`;
+            key.id = `${containerId}-key-${note.name}`;
+            key.innerText = note.name;
+            key.onclick = () => playTone(note.freq, key.id);
+            container.appendChild(key);
+        });
+    }
+
+    buildPiano('piano-stage1');
+    buildPiano('piano-stage2');
+
+    // --- GAME LOGIC ---
+    let unlockedMultipliers = []; 
+    let randomBaseFreq = 0;
+    const baseWhiteKeys = keysData.filter(k => k.type === 'white' && k.name.includes('4') && k.name !== 'A4' && k.name !== 'B4');
+
+    function highlightKeys1(keysArr) {
+        document.querySelectorAll('#piano-stage1 .key').forEach(k => k.classList.remove('highlight'));
+        keysArr.forEach(k => {
+            const el = document.getElementById(`piano-stage1-key-${k}`);
+            if(el) el.classList.add('highlight');
+        });
+    }
+
+    function loadLevel(level) {
+        initAudio(); 
+        const content = document.getElementById('level-content');
+        content.classList.remove('hidden');
+        document.getElementById('level-feedback').innerText = '';
+
+        if(level === 1) {
+            highlightKeys1(['A4', 'E5', 'A5']);
+            content.innerHTML = `
+                <h3>Level 1: The Foundations</h3>
+                <p>Observe Base note <strong>A4 (440 Hz)</strong>. <br>The Octave is <strong>A5 (880 Hz)</strong>. The Perfect Fifth is <strong>E5 (660 Hz)</strong>.</p>
+                <div class="input-row"><label>Octave Multiplier:</label><input type="number" id="ans-l1-oct"></div>
+                <div class="input-row"><label>Fifth Multiplier:</label><input type="number" id="ans-l1-fif" step="0.1"></div>
+                <button class="btn-black" style="padding: 10px;" onclick="checkLevel(1)">Unlock Multipliers</button>
+            `;
+        } else if(level === 2) {
+            highlightKeys1(['A4', 'C#5']);
+            content.innerHTML = `
+                <h3>Level 2: The "Happy" Third</h3>
+                <p>Observe Base note <strong>A4 (440 Hz)</strong>. <br>A Major Third harmony vibrates at <strong>550 Hz</strong>.</p>
+                <div class="input-row"><label>Major Third Multiplier:</label><input type="number" id="ans-l2" step="0.01"></div>
+                <button class="btn-black" style="padding: 10px;" onclick="checkLevel(2)">Unlock Multiplier</button>
+            `;
+        } else if(level === 3) {
+            highlightKeys1(['A4','A#4','B4','C5','C#5','D5','D#5','E5','F5','F#5','G5','G#5','A5']);
+            content.innerHTML = `
+                <h3>Level 3: The Secret Interval</h3>
+                <p>There are exactly <strong>12 semitones</strong> to get from A4 to A5 (the Octave). <br>To double the frequency (×2) over 12 equal steps, what is the multiplier? <br><em>Hint: Calculate 2 to the power of (1/12).</em></p>
+                <div class="input-row"><label>Semitone Multiplier:</label><input type="number" id="ans-l3" step="0.00001"></div>
+                <button class="btn-black" style="padding: 10px;" onclick="checkLevel(3)">Unlock Multiplier</button>
+            `;
+        }
+    }
+
+    function checkLevel(level) {
+        const feedback = document.getElementById('level-feedback');
+        if(level === 1) {
+            const oct = parseFloat(document.getElementById('ans-l1-oct').value);
+            const fif = parseFloat(document.getElementById('ans-l1-fif').value);
+            if(oct === 2 && fif === 1.5) {
+                feedback.style.color = "green"; feedback.innerText = "Correct! Octave and Fifth unlocked.";
+                addMultiplier(2, "Octave (×2)"); addMultiplier(1.5, "Fifth (×1.5)");
+                document.getElementById('btn-l1').disabled = true;
+                document.getElementById('btn-proceed').style.display = 'block';
+            } else { feedback.style.color = "red"; feedback.innerText = "Incorrect. Divide the higher frequencies by 440."; }
+        } 
+        else if(level === 2) {
+            const thd = parseFloat(document.getElementById('ans-l2').value);
+            if(thd === 1.25) {
+                feedback.style.color = "green"; feedback.innerText = "Correct! Major Third unlocked.";
+                addMultiplier(1.25, "Major Third (×1.25)");
+                document.getElementById('btn-l2').disabled = true;
+            } else { feedback.style.color = "red"; feedback.innerText = "Incorrect. Divide 550 by 440."; }
+        }
+        else if(level === 3) {
+            const semi = parseFloat(document.getElementById('ans-l3').value);
+            if(Math.abs(semi - 1.05946) < 0.01) {
+                feedback.style.color = "green"; feedback.innerText = "Correct! The Golden 12th Root is unlocked.";
+                addMultiplier(1.05946, "Semitone (×1.059)");
+                document.getElementById('btn-l3').disabled = true;
+            } else { feedback.style.color = "red"; feedback.innerText = "Incorrect. Use a calculator: 2 ^ (1/12)."; }
+        }
+    }
+
+    function addMultiplier(val, name) {
+        if(!unlockedMultipliers.some(m => m.val === val)) { unlockedMultipliers.push({val, name}); }
+    }
+
+    function startStage2() {
+        document.getElementById('stage1').classList.add('hidden');
+        document.getElementById('stage2').classList.remove('hidden');
+        
+        const list = document.getElementById('unlocked-list');
+        list.innerHTML = '';
+        unlockedMultipliers.forEach(m => { list.innerHTML += `<span>${m.name}</span>`; });
+
+        const randomKey = baseWhiteKeys[Math.floor(Math.random() * baseWhiteKeys.length)];
+        randomBaseFreq = randomKey.freq;
+        document.getElementById('random-note-name').innerText = randomKey.name;
+        document.getElementById('random-note-freq').innerText = randomKey.freq;
+        document.getElementById('n1-display').innerText = `${randomKey.freq} Hz`;
+
+        document.querySelectorAll('#piano-stage2 .key').forEach(k => k.classList.remove('highlight-start'));
+        const startKeyEl = document.getElementById(`piano-stage2-key-${randomKey.name}`);
+        if(startKeyEl) startKeyEl.classList.add('highlight-start');
+    }
+
+    function generateValidFrequencies() {
+        let validFreqs = [];
+        let hasL3 = unlockedMultipliers.some(m => Math.abs(m.val - 1.05946) < 0.01);
+        let hasL2 = unlockedMultipliers.some(m => m.val === 1.25);
+        
+        if (hasL3) {
+            for(let i = -30; i <= 30; i++) {
+                validFreqs.push(randomBaseFreq * Math.pow(1.05946, i));
+            }
+        } else {
+            for(let a = -5; a <= 5; a++) {
+                for(let b = -5; b <= 5; b++) {
+                    if (hasL2) {
+                        for(let c = -5; c <= 5; c++) {
+                            validFreqs.push(randomBaseFreq * Math.pow(2, a) * Math.pow(1.5, b) * Math.pow(1.25, c));
+                        }
+                    } else {
+                        validFreqs.push(randomBaseFreq * Math.pow(2, a) * Math.pow(1.5, b));
+                    }
+                }
+            }
+        }
+        return validFreqs;
+    }
+
+    function verifyBassline() {
+        const n2 = parseFloat(document.getElementById('input-n2').value);
+        const n3 = parseFloat(document.getElementById('input-n3').value);
+        const n4 = parseFloat(document.getElementById('input-n4').value);
+        const feedback = document.getElementById('bassline-feedback');
+
+        if(!n2 || !n3 || !n4) {
+            feedback.style.color = "red"; feedback.innerText = "Please calculate and enter all 4 frequencies."; return;
+        }
+
+        const validFrequencies = generateValidFrequencies();
+        const userInputs = [n2, n3, n4];
+        let allCorrect = true;
+
+        for(let input of userInputs) {
+            let isMathValid = validFrequencies.some(validFreq => Math.abs(input - validFreq) < 1.0);
+            if(!isMathValid) {
+                allCorrect = false;
+                break;
+            }
+        }
+
+        if(allCorrect) {
+            feedback.style.color = "green";
+            feedback.innerText = "Math Verified! Your frequencies perfectly match your unlocked multipliers.";
+            document.getElementById('stage3').classList.remove('hidden');
+        } else {
+            feedback.style.color = "red";
+            feedback.innerText = "Math Error! Make sure you are ONLY multiplying or dividing by your unlocked numbers from the base note.";
+        }
+    }
+
+    function generatePrompt() {
+        // Validation for Student Details
+        const sClass = document.getElementById('student-class').value.trim().toUpperCase();
+        let sNum = document.getElementById('student-num').value.trim();
+        const sNameOrig = document.getElementById('student-name').value.trim();
+
+        if(!sClass || !sNum || !sNameOrig) {
+            alert("Please fill in your Class, Class Number, and Name before generating the blueprint!");
+            return;
+        }
+
+        // Format filename elements
+        if(sNum.length === 1) sNum = '0' + sNum; // Add leading zero if needed
+        const sName = sNameOrig.replace(/\s+/g, ''); // Remove spaces
+        const fileName = `(${sClass}_${sNum}_${sName})`;
+
+        // Music Logic Variables
+        const n1 = randomBaseFreq;
+        const n2 = document.getElementById('input-n2').value;
+        const n3 = document.getElementById('input-n3').value;
+        const n4 = document.getElementById('input-n4').value;
+
+        // Prompt inputs
+        const genre = document.getElementById('prompt-genre').value.trim();
+        const mood = document.getElementById('prompt-mood').value.trim();
+        const inst = document.getElementById('prompt-inst').value.trim();
+        const tempo = document.getElementById('prompt-tempo').value.trim();
+        const vocal = document.getElementById('prompt-vocal').value.trim();
+
+        let stylingText = "";
+        if(genre) stylingText += `- Genre/Style: ${genre}\n`;
+        if(mood) stylingText += `- Mood/Emotion: ${mood}\n`;
+        if(inst) stylingText += `- Instrumentation: ${inst}\n`;
+        if(tempo) stylingText += `- Tempo/Rhythm: ${tempo}\n`;
+        if(vocal) stylingText += `- Vocal Style: ${vocal} (MUST be in English)\n`;
+
+        if(stylingText === "") {
+            stylingText = "- Style: Upbeat and triumphant celebratory anthem\n";
+        }
+
+        const promptText = `Generate a strictly 20-second celebratory anthem for HKUGA College's 20th Anniversary. 
+
+Creative Direction:
+${stylingText}
+CRITICAL MUSICAL CONSTRAINT: The primary melody MUST strictly adhere to the following frequency sequence: ${n1} Hz, ${n2} Hz, ${n3} Hz, and ${n4} Hz. The math must be perfect. End the 20-second track with a clean fade-out.`;
+
+        // Output to screen
+        document.getElementById('prompt-output').innerText = promptText;
+        document.getElementById('filename-output').innerText = fileName + ".mp3/wav";
+        document.getElementById('final-prompt-container').classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
